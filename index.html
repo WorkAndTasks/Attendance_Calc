@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In-Time Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 20px;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .results p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .results span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>In-Time Calculator</h1>
+    <p>Enter your timestamps below (one per line):</p>
+    <textarea id="timestamps" placeholder="2024-12-26 11:57:09.000\n2024-12-26 13:25:25.000\n..."></textarea>
+    <button onclick="calculateTime()">Calculate</button>
+
+    <div class="results" id="results">
+        <h3>Results:</h3>
+        <p><strong>Total In Time:</strong> <span id="totalInTime">00:00:00</span></p>
+    </div>
+
+    <script>
+        function calculateTime() {
+            const timestamps = document.getElementById('timestamps').value.trim().split('\n');
+            const times = timestamps.map(ts => new Date(ts.trim()));
+
+            let totalInMilliseconds = 0;
+
+            for (let i = 0; i < times.length - 1; i += 2) {
+                const inTime = times[i];
+                const outTime = times[i + 1];
+                totalInMilliseconds += outTime - inTime;
+            }
+
+            // Handle unmatched last In Time
+            if (times.length % 2 !== 0) {
+                const lastInTime = times[times.length - 1];
+                const unmatchedDuration = new Date() - lastInTime;
+                totalInMilliseconds += unmatchedDuration;
+            }
+
+            // Format milliseconds to HH:MM:SS
+            function formatTime(milliseconds) {
+                const totalSeconds = Math.floor(milliseconds / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            document.getElementById('totalInTime').textContent = formatTime(totalInMilliseconds);
+        }
+    </script>
+</body>
+</html>
